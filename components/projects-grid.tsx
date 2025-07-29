@@ -168,80 +168,16 @@ export default function ProjectsGrid() {
               </div>
 
               {/* Edit Image Button */}
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    size="icon"
-                    className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black hover:bg-gray-200"
-                    onClick={() => {
-                      setEditingProject(project)
-                      setEditingField("image")
-                    }}
-                  >
-                    <Upload className="h-4 w-4" />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle className="font-comic">
-                      {editingField === "image" ? "Update Project Image" : "Update GitHub Repository URL"}
-                    </DialogTitle>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    {editingField === "image" && (
-                      <>
-                        <div className="grid gap-2">
-                          <Label htmlFor="project-image" className="font-comic">
-                            Upload new image
-                          </Label>
-                          <Input id="project-image" type="file" accept="image/*" onChange={handleImageChange} />
-                        </div>
-                        {editingProject?.image && (
-                          <div className="grid gap-2">
-                            <Label className="font-comic">Preview</Label>
-                            <img
-                              src={editingProject.image || "/placeholder.svg"}
-                              alt="Preview"
-                              className="w-full h-32 object-cover border-2 border-gray-300 rounded"
-                            />
-                          </div>
-                        )}
-                      </>
-                    )}
-                    {editingField === "repo" && (
-                      <div className="grid gap-2">
-                        <Label htmlFor="project-repo" className="font-comic">
-                          GitHub Repository URL
-                        </Label>
-                        <Input
-                          id="project-repo"
-                          type="url"
-                          value={editingProject?.repo || ""}
-                          placeholder="https://github.com/username/repo"
-                          onChange={(e) =>
-                            setEditingProject((prev) => (prev ? { ...prev, repo: e.target.value } : prev))
-                          }
-                        />
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setEditingProject(null)
-                        setEditingField(null)
-                      }}
-                      className="font-comic"
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={handleSaveProject} className="font-comic">
-                      {editingField === "image" ? "Save Image" : "Save URL"}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <Button
+                size="icon"
+                className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black hover:bg-gray-200"
+                onClick={() => {
+                  setEditingProject(project)
+                  setEditingField("image")
+                }}
+              >
+                <Upload className="h-4 w-4" />
+              </Button>
             </div>
 
             <CardHeader>
@@ -271,25 +207,84 @@ export default function ProjectsGrid() {
               </a>
               
               {/* Edit Repo Button */}
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    size="icon"
-                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black hover:bg-gray-200"
-                    onClick={() => {
-                      setEditingProject(project)
-                      setEditingField("repo")
-                    }}
-                  >
-                    <Edit2 className="h-3 w-3" />
-                  </Button>
-                </DialogTrigger>
-                {/* Same DialogContent will be rendered since we check editingField */}
-              </Dialog>
+              <Button
+                size="icon"
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black hover:bg-gray-200"
+                onClick={() => {
+                  setEditingProject(project)
+                  setEditingField("repo")
+                }}
+              >
+                <Edit2 className="h-3 w-3" />
+              </Button>
             </CardFooter>
           </Card>
         ))}
       </div>
+
+      {/* Edit Project Dialog */}
+      <Dialog open={!!editingProject} onOpenChange={(open) => !open && (setEditingProject(null), setEditingField(null))}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="font-comic">
+              {editingField === "image" ? "Update Project Image" : "Update GitHub Repository URL"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            {editingField === "image" && (
+              <>
+                <div className="grid gap-2">
+                  <Label htmlFor="project-image" className="font-comic">
+                    Upload new image
+                  </Label>
+                  <Input id="project-image" type="file" accept="image/*" onChange={handleImageChange} />
+                </div>
+                {editingProject?.image && (
+                  <div className="grid gap-2">
+                    <Label className="font-comic">Preview</Label>
+                    <img
+                      src={editingProject.image || "/placeholder.svg"}
+                      alt="Preview"
+                      className="w-full h-32 object-cover border-2 border-gray-300 rounded"
+                    />
+                  </div>
+                )}
+              </>
+            )}
+            {editingField === "repo" && (
+              <div className="grid gap-2">
+                <Label htmlFor="project-repo" className="font-comic">
+                  GitHub Repository URL
+                </Label>
+                <Input
+                  id="project-repo"
+                  type="url"
+                  value={editingProject?.repo || ""}
+                  placeholder="https://github.com/username/repo"
+                  onChange={(e) =>
+                    setEditingProject((prev) => (prev ? { ...prev, repo: e.target.value } : prev))
+                  }
+                />
+              </div>
+            )}
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setEditingProject(null)
+                setEditingField(null)
+              }}
+              className="font-comic"
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleSaveProject} className="font-comic">
+              {editingField === "image" ? "Save Image" : "Save URL"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Show More/Less Button */}
       <div className="mt-8 flex justify-center">

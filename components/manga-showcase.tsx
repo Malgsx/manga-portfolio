@@ -18,7 +18,24 @@ export default function MangaShowcase() {
   const [featuredDescription, setFeaturedDescription] = useState(
     "An immersive manga reading experience with advanced features and beautiful design",
   )
+  const [demoUrl, setDemoUrl] = useState("https://github.com/Malgsx/manga-portfolio")
+  const [sourceCodeUrl, setSourceCodeUrl] = useState("https://github.com/Malgsx/manga-portfolio")
+  const [technologies, setTechnologies] = useState([
+    "NEXT.JS",
+    "TYPESCRIPT", 
+    "TAILWIND CSS",
+    "FRAMER MOTION"
+  ])
+  const [keyFeatures, setKeyFeatures] = useState([
+    "RESPONSIVE MANGA READER INTERFACE",
+    "BOOKMARK AND PROGRESS TRACKING", 
+    "DARK/LIGHT MODE SUPPORT",
+    "OFFLINE READING CAPABILITIES",
+    "SOCIAL SHARING FEATURES"
+  ])
   const [isEditingCaption, setIsEditingCaption] = useState(false)
+  const [isEditingUrls, setIsEditingUrls] = useState(false)
+  const [isEditingDetails, setIsEditingDetails] = useState(false)
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -53,14 +70,14 @@ export default function MangaShowcase() {
           </Button>
         </div>
         <p className="text-lg md:text-xl font-comic mb-6 text-white leading-relaxed">{featuredDescription}</p>
-        <div className="flex flex-wrap gap-4">
-          <a href="https://github.com/Malgsx/manga-portfolio" target="_blank" rel="noopener noreferrer">
+        <div className="flex flex-wrap gap-4 relative group">
+          <a href={demoUrl} target="_blank" rel="noopener noreferrer">
             <Button className="font-comic bg-white text-black hover:bg-gray-200 border-2 border-white">
               <ExternalLink className="mr-2 h-4 w-4" />
               Demo
             </Button>
           </a>
-          <a href="https://github.com/Malgsx/manga-portfolio" target="_blank" rel="noopener noreferrer">
+          <a href={sourceCodeUrl} target="_blank" rel="noopener noreferrer">
             <Button
               variant="outline"
               className="font-comic bg-black text-white border-2 border-white hover:bg-white hover:text-black"
@@ -69,6 +86,14 @@ export default function MangaShowcase() {
               SOURCE CODE
             </Button>
           </a>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="opacity-0 group-hover:opacity-100 transition-opacity bg-white hover:bg-gray-200 text-black ml-2"
+            onClick={() => setIsEditingUrls(true)}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
         </div>
       </div>
     </div>
@@ -123,25 +148,32 @@ export default function MangaShowcase() {
         </div>
       </div>
 
-      <div className="space-y-4 flex-1">
-        <div>
-          <h4 className="font-bold font-comic mb-3 uppercase tracking-wide text-sm text-white">TECHNOLOGIES USED:</h4>
+      <div className="space-y-4 flex-1 relative group">
+        <div className="relative">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-bold font-comic uppercase tracking-wide text-sm text-white">TECHNOLOGIES USED:</h4>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="opacity-0 group-hover:opacity-100 transition-opacity bg-white hover:bg-gray-200 text-black h-6 w-6"
+              onClick={() => setIsEditingDetails(true)}
+            >
+              <Pencil className="h-3 w-3" />
+            </Button>
+          </div>
           <div className="flex flex-wrap gap-2">
-            <Badge className="font-comic font-bold tech-nextjs border-2">NEXT.JS</Badge>
-            <Badge className="font-comic font-bold tech-typescript border-2">TYPESCRIPT</Badge>
-            <Badge className="font-comic font-bold tech-tailwind border-2">TAILWIND CSS</Badge>
-            <Badge className="font-comic font-bold tech-framer border-2">FRAMER MOTION</Badge>
+            {technologies.map((tech, index) => (
+              <Badge key={index} className="font-comic font-bold tech-nextjs border-2">{tech}</Badge>
+            ))}
           </div>
         </div>
 
         <div>
           <h4 className="font-bold font-comic mb-3 uppercase tracking-wide text-sm text-white">KEY FEATURES:</h4>
           <ul className="font-comic space-y-2 text-sm font-bold text-white">
-            <li>• RESPONSIVE MANGA READER INTERFACE</li>
-            <li>• BOOKMARK AND PROGRESS TRACKING</li>
-            <li>• DARK/LIGHT MODE SUPPORT</li>
-            <li>• OFFLINE READING CAPABILITIES</li>
-            <li>• SOCIAL SHARING FEATURES</li>
+            {keyFeatures.map((feature, index) => (
+              <li key={index}>• {feature}</li>
+            ))}
           </ul>
         </div>
       </div>
@@ -217,6 +249,94 @@ export default function MangaShowcase() {
                 Cancel
               </Button>
               <Button onClick={handleSaveCaption} className="font-comic">
+                Save Changes
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit URLs Dialog */}
+        <Dialog open={isEditingUrls} onOpenChange={setIsEditingUrls}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="font-comic">Edit Project URLs</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="demo-url" className="font-comic">
+                  Demo URL
+                </Label>
+                <Input
+                  id="demo-url"
+                  type="url"
+                  value={demoUrl}
+                  onChange={(e) => setDemoUrl(e.target.value)}
+                  className="font-comic"
+                  placeholder="https://your-demo-url.com"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="source-url" className="font-comic">
+                  Source Code URL
+                </Label>
+                <Input
+                  id="source-url"
+                  type="url"
+                  value={sourceCodeUrl}
+                  onChange={(e) => setSourceCodeUrl(e.target.value)}
+                  className="font-comic"
+                  placeholder="https://github.com/username/repo"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsEditingUrls(false)} className="font-comic">
+                Cancel
+              </Button>
+              <Button onClick={() => setIsEditingUrls(false)} className="font-comic">
+                Save Changes
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Project Details Dialog */}
+        <Dialog open={isEditingDetails} onOpenChange={setIsEditingDetails}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="font-comic">Edit Project Details</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="technologies" className="font-comic">
+                  Technologies (comma-separated)
+                </Label>
+                <Input
+                  id="technologies"
+                  value={technologies.join(", ")}
+                  onChange={(e) => setTechnologies(e.target.value.split(", ").map(tech => tech.trim().toUpperCase()))}
+                  className="font-comic"
+                  placeholder="NEXT.JS, TYPESCRIPT, TAILWIND CSS"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="features" className="font-comic">
+                  Key Features (one per line)
+                </Label>
+                <Textarea
+                  id="features"
+                  value={keyFeatures.join("\n")}
+                  onChange={(e) => setKeyFeatures(e.target.value.split("\n").map(feature => feature.trim().toUpperCase()))}
+                  className="min-h-[120px] font-comic"
+                  placeholder="RESPONSIVE MANGA READER INTERFACE&#10;BOOKMARK AND PROGRESS TRACKING"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsEditingDetails(false)} className="font-comic">
+                Cancel
+              </Button>
+              <Button onClick={() => setIsEditingDetails(false)} className="font-comic">
                 Save Changes
               </Button>
             </div>
