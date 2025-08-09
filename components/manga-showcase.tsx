@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import MangaPanelLayout from "./manga-panel-layout"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -37,6 +37,29 @@ export default function MangaShowcase() {
   const [isEditingUrls, setIsEditingUrls] = useState(false)
   const [isEditingDetails, setIsEditingDetails] = useState(false)
 
+  useEffect(() => {
+    fetch('/api/content/featured').then(async (res) => {
+      const data = await res.json()
+      setShowcaseImage(data.showcaseImage)
+      setFeaturedTitle(data.featuredTitle)
+      setFeaturedDescription(data.featuredDescription)
+      setDemoUrl(data.demoUrl)
+      setSourceCodeUrl(data.sourceCodeUrl)
+      setTechnologies(Array.isArray(data.technologies) ? data.technologies : [])
+      setKeyFeatures(Array.isArray(data.keyFeatures) ? data.keyFeatures : [])
+    }).catch(() => {})
+  }, [])
+
+  const saveFeatured = async () => {
+    await fetch('/api/content/featured', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        showcaseImage, featuredTitle, featuredDescription, demoUrl, sourceCodeUrl, technologies, keyFeatures
+      })
+    })
+  }
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -50,7 +73,7 @@ export default function MangaShowcase() {
     }
   }
 
-  const handleSaveCaption = () => {
+  const handleSaveCaption = async () => {
     setIsEditingCaption(false)
   }
 
@@ -248,7 +271,7 @@ export default function MangaShowcase() {
               <Button variant="outline" onClick={() => setIsEditingCaption(false)} className="font-comic">
                 Cancel
               </Button>
-              <Button onClick={handleSaveCaption} className="font-comic">
+              <Button onClick={async () => { await saveFeatured(); await handleSaveCaption(); }} className="font-comic">
                 Save Changes
               </Button>
             </div>
@@ -293,7 +316,7 @@ export default function MangaShowcase() {
               <Button variant="outline" onClick={() => setIsEditingUrls(false)} className="font-comic">
                 Cancel
               </Button>
-              <Button onClick={() => setIsEditingUrls(false)} className="font-comic">
+              <Button onClick={async () => { await saveFeatured(); setIsEditingUrls(false) }} className="font-comic">
                 Save Changes
               </Button>
             </div>
@@ -336,7 +359,7 @@ export default function MangaShowcase() {
               <Button variant="outline" onClick={() => setIsEditingDetails(false)} className="font-comic">
                 Cancel
               </Button>
-              <Button onClick={() => setIsEditingDetails(false)} className="font-comic">
+              <Button onClick={async () => { await saveFeatured(); setIsEditingDetails(false) }} className="font-comic">
                 Save Changes
               </Button>
             </div>

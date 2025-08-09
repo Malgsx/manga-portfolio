@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -107,17 +107,38 @@ const additionalProjects: Project[] = [
 
 export default function ProjectsGrid() {
   const [projects, setProjects] = useState<Project[]>(initialProjects)
+
+  useEffect(() => {
+    fetch('/api/content/projects').then(async (res) => {
+      const data = await res.json()
+      if (Array.isArray(data) && data.length) {
+        setProjects(data)
+      }
+    }).catch(() => {})
+  }, [])
+
+  const saveProjects = async (list: Project[]) => {
+    await fetch('/api/content/projects', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(list)
+    })
+  }
   const [showingAll, setShowingAll] = useState(false)
   const [editingProject, setEditingProject] = useState<Project | null>(null)
   const [editingField, setEditingField] = useState<"image" | "repo" | null>(null)
 
   const handleShowMore = () => {
-    setProjects([...initialProjects, ...additionalProjects])
+    const next = [...initialProjects, ...additionalProjects]
+    setProjects(next)
+    saveProjects(next)
     setShowingAll(true)
   }
 
   const handleShowLess = () => {
-    setProjects(initialProjects)
+    const next = initialProjects
+    setProjects(next)
+    saveProjects(next)
     setShowingAll(false)
   }
 
@@ -139,9 +160,11 @@ export default function ProjectsGrid() {
 
   const handleSaveProject = () => {
     if (editingProject) {
-      setProjects((prevProjects) =>
-        prevProjects.map((project) => (project.id === editingProject.id ? editingProject : project)),
-      )
+      setProjects((prevProjects) => {
+        const next = prevProjects.map((project) => (project.id === editingProject.id ? editingProject : project))
+        saveProjects(next)
+        return next
+      })
       setEditingProject(null)
       setEditingField(null)
     }

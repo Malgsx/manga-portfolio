@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
@@ -39,16 +39,37 @@ export default function AboutSection() {
   const [editingSection, setEditingSection] = useState<AboutSection | null>(null)
   const [editContent, setEditContent] = useState("")
 
+  useEffect(() => {
+    fetch('/api/content/about').then(async (res) => {
+      const data = await res.json()
+      if (Array.isArray(data) && data.length) {
+        setAboutSections(data)
+      }
+    }).catch(() => {})
+  }, [])
+
   const handleEdit = (section: AboutSection) => {
     setEditingSection(section)
     setEditContent(section.content)
   }
 
+  const saveAbout = async (list: AboutSection[]) => {
+    await fetch('/api/content/about', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(list)
+    })
+  }
+
   const handleSave = () => {
     if (editingSection) {
-      setAboutSections((sections: AboutSection[]) =>
-        sections.map((section: AboutSection) => (section.id === editingSection.id ? { ...section, content: editContent } : section)),
-      )
+      setAboutSections((prev) => {
+        const next = prev.map((section: AboutSection) => (
+          section.id === editingSection.id ? { ...section, content: editContent } : section
+        ))
+        saveAbout(next)
+        return next
+      })
       setEditingSection(null)
       setEditContent("")
     }

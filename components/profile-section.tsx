@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -21,6 +21,27 @@ export default function ProfileSection() {
   const [twitterUrl, setTwitterUrl] = useState("https://x.com/MalGsx")
   const [substackUrl, setSubstackUrl] = useState("https://mal7.substack.com/")
   const [isEditingSocials, setIsEditingSocials] = useState(false)
+
+  useEffect(() => {
+    // load from backend
+    fetch('/api/content/profile').then(async (res) => {
+      const data = await res.json()
+      setProfileImage(data.profileImage)
+      setName(data.name)
+      setBio(data.bio)
+      setGithubUrl(data.githubUrl)
+      setTwitterUrl(data.twitterUrl)
+      setSubstackUrl(data.substackUrl)
+    }).catch(() => {})
+  }, [])
+
+  const saveProfile = async () => {
+    await fetch('/api/content/profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ profileImage, name, bio, githubUrl, twitterUrl, substackUrl })
+    })
+  }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -143,7 +164,7 @@ export default function ProfileSection() {
             </div>
           </div>
           <div className="flex justify-end">
-            <Button onClick={() => setIsEditing(false)} className="font-comic">
+            <Button onClick={async () => { await saveProfile(); setIsEditing(false) }} className="font-comic">
               Save Changes
             </Button>
           </div>
@@ -192,7 +213,7 @@ export default function ProfileSection() {
             </div>
           </div>
           <div className="flex justify-end">
-            <Button onClick={() => setIsEditingSocials(false)} className="font-comic">
+            <Button onClick={async () => { await saveProfile(); setIsEditingSocials(false) }} className="font-comic">
               Save Changes
             </Button>
           </div>
