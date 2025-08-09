@@ -47,8 +47,18 @@ A modern, manga-themed portfolio website built with Next.js, TypeScript, and Tai
    pnpm dev
    ```
 
-4. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
+4. **Open your browser Environments**
+   
+Local Development
+- **URL**:Check local host in order to run.
+- **Purpose**: Development, testing, and contributions
+- **Database**: Local SQLite or development database
+
+### Production (Vercel)
+- **URL**: Your custom Vercel domain
+- **Purpose**: Live application for end users  
+- **Database**: Production database connection
+
 
 ## 🛠️ Tech Stack
 
