@@ -142,19 +142,21 @@ export default function ProjectsGrid() {
     setShowingAll(false)
   }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file && editingProject) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        if (e.target?.result) {
-          setEditingProject({
-            ...editingProject,
-            image: e.target.result as string,
-          })
-        }
+      const res = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
+        method: 'POST',
+        headers: { 'content-type': file.type },
+        body: file
+      })
+      const data = await res.json()
+      if (data.url) {
+        setEditingProject({
+          ...editingProject,
+          image: data.url,
+        })
       }
-      reader.readAsDataURL(file)
     }
   }
 
