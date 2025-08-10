@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useEffect, useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { IfEdit } from "@/components/edit-mode-context"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -47,6 +48,8 @@ export default function ProfileSection() {
     const file = e.target.files?.[0]
     if (file) {
       // upload to Vercel Blob via API route
+      setUploading(true)
+      setProgress(0)
       const res = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
         method: 'POST',
         headers: { 'content-type': file.type },
@@ -58,8 +61,13 @@ export default function ProfileSection() {
         // persist immediately
         await saveProfile()
       }
+      setUploading(false)
+      setProgress(100)
     }
   }
+
+  const [uploading, setUploading] = useState(false)
+  const [progress, setProgress] = useState(0)
 
   return (
     <div className="comic-panel p-6 bg-black dark:bg-black border-4 border-white dark:border-white rounded-lg shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
@@ -70,16 +78,17 @@ export default function ProfileSection() {
             <AvatarFallback className="font-comic text-3xl">MD</AvatarFallback>
           </Avatar>
 
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                size="icon"
-                className="absolute bottom-0 right-0 rounded-full bg-white dark:bg-white text-black dark:text-black hover:bg-gray-200 dark:hover:bg-gray-200"
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
+          <IfEdit>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  size="icon"
+                  className="absolute bottom-0 right-0 rounded-full bg-white dark:bg-white text-black dark:text-black hover:bg-gray-200 dark:hover:bg-gray-200"
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
               <DialogHeader>
                 <DialogTitle className="font-comic">Change Profile Picture</DialogTitle>
               </DialogHeader>
@@ -88,17 +97,23 @@ export default function ProfileSection() {
                   Upload new picture
                 </Label>
                 <Input id="picture" type="file" accept="image/*" onChange={handleImageChange} />
+                 {uploading && (
+                   <p className="text-sm text-white">Uploading...</p>
+                 )}
               </div>
-            </DialogContent>
-          </Dialog>
+              </DialogContent>
+            </Dialog>
+          </IfEdit>
         </div>
 
         <div className="space-y-4 text-center md:text-left">
           <div className="flex items-center gap-2 justify-center md:justify-start">
             <h2 className="text-2xl font-bold font-comic text-white">{name}</h2>
-            <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)}>
-              <Pencil className="h-4 w-4" />
-            </Button>
+            <IfEdit>
+              <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)}>
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </IfEdit>
           </div>
 
           <p className="max-w-md font-comic text-white">{bio}</p>
@@ -136,14 +151,16 @@ export default function ProfileSection() {
                 Substack
               </Button>
             </a>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsEditingSocials(true)}
-              className="text-white hover:bg-white hover:text-black"
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
+            <IfEdit>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsEditingSocials(true)}
+                className="text-white hover:bg-white hover:text-black"
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </IfEdit>
           </div>
         </div>
       </div>

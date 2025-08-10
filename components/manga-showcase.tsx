@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Github, ExternalLink, Code, Palette, Upload, Pencil } from "lucide-react"
+import { IfEdit } from "@/components/edit-mode-context"
 
 export default function MangaShowcase() {
   const [showcaseImage, setShowcaseImage] = useState("/placeholder.svg?height=200&width=300")
@@ -63,6 +64,7 @@ export default function MangaShowcase() {
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      setIsEditingDetails(false)
       const res = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
         method: 'POST',
         headers: { 'content-type': file.type },
@@ -86,14 +88,16 @@ export default function MangaShowcase() {
       <div className="relative z-10 max-w-4xl">
         <div className="flex items-start gap-2 mb-3">
           <h2 className="text-3xl md:text-4xl font-bold font-comic text-white">{featuredTitle}</h2>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="opacity-0 group-hover:opacity-100 transition-opacity bg-white hover:bg-gray-200 text-black mt-1"
-            onClick={() => setIsEditingCaption(true)}
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
+          <IfEdit>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="opacity-0 group-hover:opacity-100 transition-opacity bg-white hover:bg-gray-200 text-black mt-1"
+              onClick={() => setIsEditingCaption(true)}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </IfEdit>
         </div>
         <p className="text-lg md:text-xl font-comic mb-6 text-white leading-relaxed">{featuredDescription}</p>
         <div className="flex flex-wrap gap-4 relative group">
@@ -112,14 +116,16 @@ export default function MangaShowcase() {
               SOURCE CODE
             </Button>
           </a>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="opacity-0 group-hover:opacity-100 transition-opacity bg-white hover:bg-gray-200 text-black ml-2"
-            onClick={() => setIsEditingUrls(true)}
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
+          <IfEdit>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="opacity-0 group-hover:opacity-100 transition-opacity bg-white hover:bg-gray-200 text-black ml-2"
+              onClick={() => setIsEditingUrls(true)}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </IfEdit>
         </div>
       </div>
     </div>
@@ -140,12 +146,14 @@ export default function MangaShowcase() {
           {/* Edit Image Button */}
           <Dialog>
             <DialogTrigger asChild>
-              <Button
-                size="icon"
-                className="absolute bottom-6 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black hover:bg-gray-200"
-              >
-                <Upload className="h-4 w-4" />
-              </Button>
+              <IfEdit>
+                <Button
+                  size="icon"
+                  className="absolute bottom-6 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black hover:bg-gray-200"
+                >
+                  <Upload className="h-4 w-4" />
+                </Button>
+              </IfEdit>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -157,6 +165,7 @@ export default function MangaShowcase() {
                     Upload new image
                   </Label>
                   <Input id="showcase-image" type="file" accept="image/*" onChange={handleImageChange} />
+                 <p className="text-xs text-white/80">Upload replaces the image and saves automatically</p>
                 </div>
                 {showcaseImage && (
                   <div className="grid gap-2">
@@ -178,14 +187,16 @@ export default function MangaShowcase() {
         <div className="relative">
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-bold font-comic uppercase tracking-wide text-sm text-white">TECHNOLOGIES USED:</h4>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="opacity-0 group-hover:opacity-100 transition-opacity bg-white hover:bg-gray-200 text-black h-6 w-6"
-              onClick={() => setIsEditingDetails(true)}
-            >
-              <Pencil className="h-3 w-3" />
-            </Button>
+            <IfEdit>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="opacity-0 group-hover:opacity-100 transition-opacity bg-white hover:bg-gray-200 text-black h-6 w-6"
+                onClick={() => setIsEditingDetails(true)}
+              >
+                <Pencil className="h-3 w-3" />
+              </Button>
+            </IfEdit>
           </div>
           <div className="flex flex-wrap gap-2">
             {technologies.map((tech, index) => (

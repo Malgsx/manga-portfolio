@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { IfEdit } from "@/components/edit-mode-context"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -193,16 +194,18 @@ export default function ProjectsGrid() {
               </div>
 
               {/* Edit Image Button */}
-              <Button
-                size="icon"
-                className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black hover:bg-gray-200"
-                onClick={() => {
-                  setEditingProject(project)
-                  setEditingField("image")
-                }}
-              >
-                <Upload className="h-4 w-4" />
-              </Button>
+              <IfEdit>
+                <Button
+                  size="icon"
+                  className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black hover:bg-gray-200"
+                  onClick={() => {
+                    setEditingProject(project)
+                    setEditingField("image")
+                  }}
+                >
+                  <Upload className="h-4 w-4" />
+                </Button>
+              </IfEdit>
             </div>
 
             <CardHeader>
@@ -232,16 +235,18 @@ export default function ProjectsGrid() {
               </a>
               
               {/* Edit Repo Button */}
-              <Button
-                size="icon"
-                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black hover:bg-gray-200"
-                onClick={() => {
-                  setEditingProject(project)
-                  setEditingField("repo")
-                }}
-              >
-                <Edit2 className="h-3 w-3" />
-              </Button>
+              <IfEdit>
+                <Button
+                  size="icon"
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black hover:bg-gray-200"
+                  onClick={() => {
+                    setEditingProject(project)
+                    setEditingField("repo")
+                  }}
+                >
+                  <Edit2 className="h-3 w-3" />
+                </Button>
+              </IfEdit>
             </CardFooter>
           </Card>
         ))}
@@ -263,6 +268,7 @@ export default function ProjectsGrid() {
                     Upload new image
                   </Label>
                   <Input id="project-image" type="file" accept="image/*" onChange={handleImageChange} />
+                  <p className="text-xs">Upload replaces the image and saves in the next step</p>
                 </div>
                 {editingProject?.image && (
                   <div className="grid gap-2">

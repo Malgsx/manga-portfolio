@@ -3,6 +3,8 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { EditModeProvider } from "@/components/edit-mode-context"
+import EditModeToggle from "@/components/edit-mode-toggle"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -24,8 +26,11 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {children}
-        </ThemeProvider>
+        <EditModeProvider>
+        {children}
+         <EditModeToggle />
+          </EditModeProvider>
+         </ThemeProvider>
       </body>
     </html>
   )

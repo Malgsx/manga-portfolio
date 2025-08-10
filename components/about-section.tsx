@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
+import { IfEdit } from "@/components/edit-mode-context"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
@@ -96,14 +97,16 @@ export default function AboutSection() {
               <p className="font-comic font-bold text-white pr-8">{section.content}</p>
 
               {/* Edit button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white hover:bg-gray-200 text-black"
-                onClick={() => handleEdit(section)}
-              >
-                <Pencil className="h-3 w-3" />
-              </Button>
+              <IfEdit>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white hover:bg-gray-200 text-black"
+                  onClick={() => handleEdit(section)}
+                >
+                  <Pencil className="h-3 w-3" />
+                </Button>
+              </IfEdit>
             </div>
           ))}
         </div>
