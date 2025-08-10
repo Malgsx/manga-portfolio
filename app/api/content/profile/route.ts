@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { getSection, setSection, type ProfileData } from "@/lib/storage"
+import { logAudit } from "@/lib/audit"
 
 const defaultProfile: ProfileData = {
   profileImage: "/placeholder.svg?height=100&width=100",
@@ -20,5 +21,6 @@ export async function POST(req: Request) {
   const current = await getSection<ProfileData>("content:profile", defaultProfile)
   const next = { ...current, ...body }
   await setSection("content:profile", next)
+  await logAudit("profile.update", { keys: Object.keys(body || {}) })
   return NextResponse.json(next)
 }

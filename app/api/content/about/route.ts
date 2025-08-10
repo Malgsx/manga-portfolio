@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { getSection, setSection, type AboutSection } from "@/lib/storage"
+import { logAudit } from "@/lib/audit"
 
 const defaultAbout: AboutSection[] = [
   {
@@ -32,5 +33,6 @@ export async function GET() {
 export async function POST(req: Request) {
   const body = (await req.json()) as AboutSection[]
   await setSection("content:about", body)
+  await logAudit("about.update", { count: Array.isArray(body) ? body.length : 0 })
   return NextResponse.json(body)
 }

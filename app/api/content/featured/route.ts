@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { getSection, setSection, type FeaturedData } from "@/lib/storage"
+import { logAudit } from "@/lib/audit"
 
 const defaultFeatured: FeaturedData = {
   showcaseImage: "/placeholder.svg?height=200&width=300",
@@ -27,5 +28,6 @@ export async function POST(req: Request) {
   const current = await getSection<FeaturedData>("content:featured", defaultFeatured)
   const next = { ...current, ...body }
   await setSection("content:featured", next)
+  await logAudit("featured.update", { fields: Object.keys(body || {}) })
   return NextResponse.json(next)
 }
