@@ -4,6 +4,8 @@ import { logAudit } from "@/lib/audit"
 
 const defaultProjects: Project[] = []
 
+export const dynamic = "force-dynamic"
+
 export async function GET() {
   const data = await getSection<Project[]>("content:projects", defaultProjects)
   return NextResponse.json(data)

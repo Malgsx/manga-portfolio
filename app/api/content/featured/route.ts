@@ -18,6 +18,8 @@ const defaultFeatured: FeaturedData = {
   ],
 }
 
+export const dynamic = "force-dynamic"
+
 export async function GET() {
   const data = await getSection<FeaturedData>("content:featured", defaultFeatured)
   return NextResponse.json(data)

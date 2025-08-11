@@ -39,7 +39,7 @@ export default function MangaShowcase() {
   const [isEditingDetails, setIsEditingDetails] = useState(false)
 
   useEffect(() => {
-    fetch('/api/content/featured').then(async (res) => {
+    fetch('/api/content/featured', { cache: 'no-store' }).then(async (res) => {
       const data = await res.json()
       setShowcaseImage(data.showcaseImage)
       setFeaturedTitle(data.featuredTitle)

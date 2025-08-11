@@ -25,7 +25,7 @@ export default function ProfileSection() {
 
   useEffect(() => {
     // load from backend
-    fetch('/api/content/profile').then(async (res) => {
+    fetch('/api/content/profile', { cache: 'no-store' }).then(async (res) => {
       const data = await res.json()
       setProfileImage(data.profileImage)
       setName(data.name)

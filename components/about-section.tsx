@@ -41,7 +41,7 @@ export default function AboutSection() {
   const [editContent, setEditContent] = useState("")
 
   useEffect(() => {
-    fetch('/api/content/about').then(async (res) => {
+    fetch('/api/content/about', { cache: 'no-store' }).then(async (res) => {
       const data = await res.json()
       if (Array.isArray(data) && data.length) {
         setAboutSections(data)

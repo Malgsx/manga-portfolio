@@ -11,6 +11,8 @@ const defaultProfile: ProfileData = {
   substackUrl: "https://mal7.substack.com/",
 }
 
+export const dynamic = "force-dynamic"
+
 export async function GET() {
   const data = await getSection<ProfileData>("content:profile", defaultProfile)
   return NextResponse.json(data)

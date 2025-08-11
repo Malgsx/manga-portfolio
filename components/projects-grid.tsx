@@ -110,7 +110,7 @@ export default function ProjectsGrid() {
   const [projects, setProjects] = useState<Project[]>(initialProjects)
 
   useEffect(() => {
-    fetch('/api/content/projects').then(async (res) => {
+    fetch('/api/content/projects', { cache: 'no-store' }).then(async (res) => {
       const data = await res.json()
       if (Array.isArray(data) && data.length) {
         setProjects(data)

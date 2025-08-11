@@ -25,6 +25,8 @@ const defaultAbout: AboutSection[] = [
   },
 ]
 
+export const dynamic = "force-dynamic"
+
 export async function GET() {
   const data = await getSection<AboutSection[]>("content:about", defaultAbout)
   return NextResponse.json(data)
