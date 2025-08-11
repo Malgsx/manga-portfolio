@@ -5,47 +5,31 @@ import { useEditMode } from "@/components/edit-mode-context"
 import { Button } from "@/components/ui/button"
 
 export default function EditModeToggle() {
-  const { isAuthenticated, isEditMode, setEditMode, login, logout, refreshAuth } = useEditMode()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { isEditMode, setEditMode, dirty, saveAll, clearSavers } = useEditMode()
+  const [saving, setSaving] = useState(false)
 
-  const enter = async () => {
-    setError(null)
-    const pwd = window.prompt("Enter admin password to enable Edit Mode:") || ""
-    if (!pwd) return
-    setLoading(true)
-    const ok = await login(pwd)
-    if (!ok) setError("Invalid password")
-    setLoading(false)
-  }
-
-  const exit = async () => {
-    setLoading(true)
-    await logout()
-    setLoading(false)
-  }
+  const enter = () => setEditMode(true)
+  const close = () => setEditMode(false)
+  const save = async () => { setSaving(true); await saveAll(); setSaving(false); setEditMode(false) }
+  const discard = () => { clearSavers(); setEditMode(false); window.location.reload() }
 
   return (
     <div className="fixed bottom-4 right-4 z-[9999] flex flex-col items-end gap-2">
-      {error && (
-        <div className="text-sm bg-red-600 text-white px-3 py-1 rounded">{error}</div>
-      )}
-      {!isAuthenticated ? (
-        <Button size="sm" onClick={enter} disabled={loading} className="font-comic">
-          {loading ? "Checking..." : "Enter Edit Mode"}
+      {!isEditMode ? (
+        <Button size="sm" onClick={enter} className="font-comic">
+          Enter Edit Mode
         </Button>
       ) : (
         <div className="flex items-center gap-2 bg-black/70 text-white px-3 py-2 rounded border border-white">
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={isEditMode}
-              onChange={(e) => setEditMode(e.target.checked)}
-            />
-            <span className="font-comic text-sm">Edit Mode {isEditMode ? "ON" : "OFF"}</span>
-          </label>
-          <Button size="sm" variant="outline" onClick={exit} disabled={loading} className="font-comic bg-white text-black">
-            Logout
+          <span className="font-comic text-sm mr-2">Edit Mode</span>
+          <Button size="sm" variant="outline" onClick={save} disabled={!dirty || saving} className="font-comic bg-white text-black">
+            {saving ? "Saving..." : "Save changes"}
+          </Button>
+          <Button size="sm" variant="outline" onClick={discard} className="font-comic bg-white text-black">
+            Discard
+          </Button>
+          <Button size="sm" variant="ghost" onClick={close} className="font-comic">
+            Close
           </Button>
         </div>
       )}

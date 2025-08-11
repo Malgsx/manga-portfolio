@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Github, ExternalLink, Code, Palette, Upload, Pencil } from "lucide-react"
-import { IfEdit } from "@/components/edit-mode-context"
+import { IfEdit, useEditMode } from "@/components/edit-mode-context"
 
 export default function MangaShowcase() {
   const [showcaseImage, setShowcaseImage] = useState("/placeholder.svg?height=200&width=300")
@@ -61,6 +61,8 @@ export default function MangaShowcase() {
     })
   }
 
+  const { addSaver, markDirty } = useEditMode()
+
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -73,7 +75,8 @@ export default function MangaShowcase() {
       const data = await res.json()
       if (data.url) {
         setShowcaseImage(data.url)
-        await saveFeatured()
+        addSaver(() => saveFeatured())
+        markDirty()
       }
     }
   }
@@ -285,7 +288,7 @@ export default function MangaShowcase() {
               <Button variant="outline" onClick={() => setIsEditingCaption(false)} className="font-comic">
                 Cancel
               </Button>
-              <Button onClick={async () => { await saveFeatured(); await handleSaveCaption(); }} className="font-comic">
+              <Button onClick={() => { addSaver(() => saveFeatured()); markDirty(); handleSaveCaption(); }} className="font-comic">
                 Save Changes
               </Button>
             </div>
@@ -330,7 +333,7 @@ export default function MangaShowcase() {
               <Button variant="outline" onClick={() => setIsEditingUrls(false)} className="font-comic">
                 Cancel
               </Button>
-              <Button onClick={async () => { await saveFeatured(); setIsEditingUrls(false) }} className="font-comic">
+              <Button onClick={() => { addSaver(() => saveFeatured()); markDirty(); setIsEditingUrls(false) }} className="font-comic">
                 Save Changes
               </Button>
             </div>
@@ -373,7 +376,7 @@ export default function MangaShowcase() {
               <Button variant="outline" onClick={() => setIsEditingDetails(false)} className="font-comic">
                 Cancel
               </Button>
-              <Button onClick={async () => { await saveFeatured(); setIsEditingDetails(false) }} className="font-comic">
+              <Button onClick={() => { addSaver(() => saveFeatured()); markDirty(); setIsEditingDetails(false) }} className="font-comic">
                 Save Changes
               </Button>
             </div>

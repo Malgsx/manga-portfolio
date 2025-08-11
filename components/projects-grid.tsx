@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { IfEdit } from "@/components/edit-mode-context"
+import { IfEdit, useEditMode } from "@/components/edit-mode-context"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -125,6 +125,7 @@ export default function ProjectsGrid() {
       body: JSON.stringify(list)
     })
   }
+  const { addSaver, markDirty } = useEditMode()
   const [showingAll, setShowingAll] = useState(false)
   const [editingProject, setEditingProject] = useState<Project | null>(null)
   const [editingField, setEditingField] = useState<"image" | "repo" | null>(null)
@@ -132,14 +133,16 @@ export default function ProjectsGrid() {
   const handleShowMore = () => {
     const next = [...initialProjects, ...additionalProjects]
     setProjects(next)
-    saveProjects(next)
+    addSaver(() => saveProjects(next))
+    markDirty()
     setShowingAll(true)
   }
 
   const handleShowLess = () => {
     const next = initialProjects
     setProjects(next)
-    saveProjects(next)
+    addSaver(() => saveProjects(next))
+    markDirty()
     setShowingAll(false)
   }
 
@@ -157,6 +160,7 @@ export default function ProjectsGrid() {
           ...editingProject,
           image: data.url,
         })
+        markDirty()
       }
     }
   }
@@ -165,7 +169,8 @@ export default function ProjectsGrid() {
     if (editingProject) {
       setProjects((prevProjects) => {
         const next = prevProjects.map((project) => (project.id === editingProject.id ? editingProject : project))
-        saveProjects(next)
+        addSaver(() => saveProjects(next))
+        markDirty()
         return next
       })
       setEditingProject(null)

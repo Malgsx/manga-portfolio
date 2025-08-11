@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useEffect, useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { IfEdit } from "@/components/edit-mode-context"
+import { IfEdit, useEditMode } from "@/components/edit-mode-context"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -44,6 +44,8 @@ export default function ProfileSection() {
     })
   }
 
+  const { addSaver, markDirty } = useEditMode()
+
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -58,8 +60,9 @@ export default function ProfileSection() {
       const data = await res.json()
       if (data.url) {
         setProfileImage(data.url)
-        // persist immediately
-        await saveProfile()
+        // mark pending save
+        addSaver(() => saveProfile())
+        markDirty()
       }
       setUploading(false)
       setProgress(100)
@@ -186,7 +189,7 @@ export default function ProfileSection() {
             </div>
           </div>
           <div className="flex justify-end">
-            <Button onClick={async () => { await saveProfile(); setIsEditing(false) }} className="font-comic">
+            <Button onClick={() => { addSaver(() => saveProfile()); markDirty(); setIsEditing(false) }} className="font-comic">
               Save Changes
             </Button>
           </div>
@@ -235,7 +238,7 @@ export default function ProfileSection() {
             </div>
           </div>
           <div className="flex justify-end">
-            <Button onClick={async () => { await saveProfile(); setIsEditingSocials(false) }} className="font-comic">
+            <Button onClick={() => { addSaver(() => saveProfile()); markDirty(); setIsEditingSocials(false) }} className="font-comic">
               Save Changes
             </Button>
           </div>

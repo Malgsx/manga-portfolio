@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { IfEdit } from "@/components/edit-mode-context"
+import { IfEdit, useEditMode } from "@/components/edit-mode-context"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
@@ -62,13 +62,16 @@ export default function AboutSection() {
     })
   }
 
+  const { addSaver, markDirty } = useEditMode()
+
   const handleSave = () => {
     if (editingSection) {
       setAboutSections((prev) => {
         const next = prev.map((section: AboutSection) => (
           section.id === editingSection.id ? { ...section, content: editContent } : section
         ))
-        saveAbout(next)
+        addSaver(() => saveAbout(next))
+        markDirty()
         return next
       })
       setEditingSection(null)

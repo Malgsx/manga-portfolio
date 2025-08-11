@@ -2,56 +2,47 @@
 
 import React from "react"
 
+type Saver = () => Promise<void>
+
 type EditModeContextType = {
-  isAuthenticated: boolean
   isEditMode: boolean
   setEditMode: (v: boolean) => void
-  login: (password: string) => Promise<boolean>
-  logout: () => Promise<void>
-  refreshAuth: () => Promise<void>
+  dirty: boolean
+  addSaver: (fn: Saver) => void
+  clearSavers: () => void
+  saveAll: () => Promise<void>
+  markDirty: () => void
 }
 
 const EditModeContext = React.createContext<EditModeContextType | null>(null)
 
 export function EditModeProvider({ children }: { children: React.ReactNode }) {
-  const [isAuthenticated, setAuthenticated] = React.useState(false)
   const [isEditMode, setEditMode] = React.useState(false)
+  const [dirty, setDirty] = React.useState(false)
+  const saversRef = React.useRef<Set<Saver>>(new Set())
 
-  const refreshAuth = React.useCallback(async () => {
-    try {
-      const res = await fetch("/api/admin/me", { cache: "no-store" })
-      const data = await res.json()
-      setAuthenticated(!!data?.authenticated)
-      if (!data?.authenticated) setEditMode(false)
-    } catch {}
+  const addSaver = React.useCallback((fn: Saver) => {
+    saversRef.current.add(fn)
+    setDirty(true)
   }, [])
 
-  React.useEffect(() => {
-    refreshAuth()
-  }, [refreshAuth])
+  const clearSavers = React.useCallback(() => {
+    saversRef.current.clear()
+    setDirty(false)
+  }, [])
 
-  const login = async (password: string) => {
-    const res = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
-    })
-    if (res.ok) {
-      setAuthenticated(true)
-      setEditMode(true)
-      return true
+  const saveAll = React.useCallback(async () => {
+    for (const fn of Array.from(saversRef.current)) {
+      await fn()
     }
-    return false
-  }
+    saversRef.current.clear()
+    setDirty(false)
+  }, [])
 
-  const logout = async () => {
-    await fetch("/api/admin/logout", { method: "POST" })
-    setAuthenticated(false)
-    setEditMode(false)
-  }
+  const markDirty = React.useCallback(() => setDirty(true), [])
 
   return (
-    <EditModeContext.Provider value={{ isAuthenticated, isEditMode, setEditMode, login, logout, refreshAuth }}>
+    <EditModeContext.Provider value={{ isEditMode, setEditMode, dirty, addSaver, clearSavers, saveAll, markDirty }}>
       {children}
     </EditModeContext.Provider>
   )
