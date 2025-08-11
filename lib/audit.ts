@@ -1,4 +1,4 @@
-import { kv } from "@vercel/kv"
+import { redis } from "@/lib/redis"
 
 export type AuditEntry = {
   id: string
@@ -18,12 +18,12 @@ export async function logAudit(action: string, meta?: Record<string, unknown>) {
     meta,
   }
   // push to head and trim to keep list bounded
-  await kv.lpush(AUDIT_KEY, JSON.stringify(entry))
-  await kv.ltrim(AUDIT_KEY, 0, MAX_ENTRIES - 1)
+  await redis.lpush(AUDIT_KEY, JSON.stringify(entry))
+  await redis.ltrim(AUDIT_KEY, 0, MAX_ENTRIES - 1)
 }
 
 export async function getAudit(limit = 100): Promise<AuditEntry[]> {
-  const raw = await kv.lrange<string>(AUDIT_KEY, 0, Math.max(0, limit - 1))
+  const raw = await redis.lrange<string>(AUDIT_KEY, 0, Math.max(0, limit - 1))
   return raw
     .map((s) => {
       try {

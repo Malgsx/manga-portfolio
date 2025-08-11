@@ -1,4 +1,4 @@
-import { kv } from "@vercel/kv"
+import { redis } from "@/lib/redis"
 
 export type ProfileData = {
   profileImage: string
@@ -36,13 +36,14 @@ export type AboutSection = {
 
 export async function getSection<T>(key: string, fallback: T): Promise<T> {
   try {
-    const value = await kv.get<T>(key)
-    return (value as T) ?? fallback
+    const raw = await redis.get<string>(key)
+    if (!raw) return fallback
+    return JSON.parse(raw) as T
   } catch (e) {
     return fallback
   }
 }
 
 export async function setSection<T>(key: string, value: T): Promise<void> {
-  await kv.set(key, value)
+  await redis.set(key, JSON.stringify(value))
 }
