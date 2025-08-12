@@ -315,7 +315,7 @@ export default function ProjectsGrid() {
             >
               Cancel
             </Button>
-            <Button onClick={handleSaveProject} className="font-comic">
+            <Button onClick={async () => { handleSaveProject(); addSaver(() => saveProjects(projects)); markDirty(); await saveProjects(projects); }} className="font-comic">
               {editingField === "image" ? "Save Image" : "Save URL"}
             </Button>
           </div>

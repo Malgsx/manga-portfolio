@@ -189,7 +189,7 @@ export default function ProfileSection() {
             </div>
           </div>
           <div className="flex justify-end">
-            <Button onClick={() => { addSaver(() => saveProfile()); markDirty(); setIsEditing(false) }} className="font-comic">
+            <Button onClick={async () => { await saveProfile(); addSaver(() => saveProfile()); markDirty(); setIsEditing(false) }} className="font-comic">
               Save Changes
             </Button>
           </div>
@@ -238,7 +238,7 @@ export default function ProfileSection() {
             </div>
           </div>
           <div className="flex justify-end">
-            <Button onClick={() => { addSaver(() => saveProfile()); markDirty(); setIsEditingSocials(false) }} className="font-comic">
+            <Button onClick={async () => { await saveProfile(); addSaver(() => saveProfile()); markDirty(); setIsEditingSocials(false) }} className="font-comic">
               Save Changes
             </Button>
           </div>

@@ -138,7 +138,7 @@ export default function AboutSection() {
               <Button variant="outline" onClick={handleCancel} className="font-comic bg-transparent">
                 Cancel
               </Button>
-              <Button onClick={handleSave} className="font-comic">
+              <Button onClick={async () => { handleSave(); addSaver(() => saveAbout(aboutSections)); markDirty(); await saveAbout(aboutSections); }} className="font-comic">
                 Save Changes
               </Button>
             </div>

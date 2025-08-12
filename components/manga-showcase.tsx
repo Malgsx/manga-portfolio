@@ -288,7 +288,7 @@ export default function MangaShowcase() {
               <Button variant="outline" onClick={() => setIsEditingCaption(false)} className="font-comic">
                 Cancel
               </Button>
-              <Button onClick={() => { addSaver(() => saveFeatured()); markDirty(); handleSaveCaption(); }} className="font-comic">
+              <Button onClick={async () => { await saveFeatured(); addSaver(() => saveFeatured()); markDirty(); handleSaveCaption(); }} className="font-comic">
                 Save Changes
               </Button>
             </div>
@@ -333,7 +333,7 @@ export default function MangaShowcase() {
               <Button variant="outline" onClick={() => setIsEditingUrls(false)} className="font-comic">
                 Cancel
               </Button>
-              <Button onClick={() => { addSaver(() => saveFeatured()); markDirty(); setIsEditingUrls(false) }} className="font-comic">
+              <Button onClick={async () => { await saveFeatured(); addSaver(() => saveFeatured()); markDirty(); setIsEditingUrls(false) }} className="font-comic">
                 Save Changes
               </Button>
             </div>
@@ -376,7 +376,7 @@ export default function MangaShowcase() {
               <Button variant="outline" onClick={() => setIsEditingDetails(false)} className="font-comic">
                 Cancel
               </Button>
-              <Button onClick={() => { addSaver(() => saveFeatured()); markDirty(); setIsEditingDetails(false) }} className="font-comic">
+              <Button onClick={async () => { await saveFeatured(); addSaver(() => saveFeatured()); markDirty(); setIsEditingDetails(false) }} className="font-comic">
                 Save Changes
               </Button>
             </div>
